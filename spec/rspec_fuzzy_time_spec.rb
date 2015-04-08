@@ -5,7 +5,5 @@ describe RspecFuzzyTime do
     expect(RspecFuzzyTime::VERSION).not_to be nil
   end
 
-  it 'does something useful' do
-    expect(false).to eq(true)
-  end
+  # TODO: test that adding configuration settings is working and they have assigned values 
 end
