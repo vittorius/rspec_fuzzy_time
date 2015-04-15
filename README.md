@@ -68,11 +68,42 @@ expect(User.last).to have_attributes(
     )
 ```
 
-You want to `have_attributes` and composable matchers to 'just work' but looks like you will have to remove Time-like attributes from comparison by `have_attributes` and compare them separately using one of pretty ugly approaches described above.
+You want to `have_attributes` and composable matchers to 'just work' but looks like you will have to remove Time-like attributes from comparison by `have_attributes` and compare them separately using one of pretty ugly approaches described above. Something like this (just a dummy example to show the point):
+
+```ruby
+shared_examples 'creating Junk with expected received date' do
+  it 'creates Junk with expected publish date' do
+    Event.create_from_params(event_params_malformed)
+    expect(Junk.last.received_date.to_i).to eq(event_params_malformed.created_at.to_i)
+  end
+end
+    
+# ...
+
+it 'should create junk with corresponding attributes of EventParams and correct reason' do
+  Event.create_from_params(event_params_malformed)
+  expect(Junk.last).to have_attributes(
+                         body: event_params_malformed.to_json, 
+                         reason: 'malformed event params'
+                       )
+end
+
+it_behaves_like 'creating Junk with expected received date'
+```
 
 ## Solution
 
-## Usage
+Instead of using `expect(@some_entity.updated_at.utc).to be_within(1.second).of Time.now` let's make this gap configurable and applied  absolutely transparently for RSpec user! Thus the Time comparison will be performed using any desired precision which should be configured according to your database time format storage precision.
+
+Proceed to the [**Usage**](#usage) section to see how you can do this.
+
+Here's some data on how different databases (which have backends supported by ActiveRecord) deal with precision of dates and times:
+
+* PostgreSQL (8.4, 9.0-9.4): [1 microsecond](http://www.postgresql.org/docs/9.4/static/datatype-datetime.html)
+* Sqlite3: Arbitrary precision as an [ISO8601](http://en.wikipedia.org/wiki/ISO_8601#Times) [string](http://www.sqlite.org/datatype3.html) with fractional seconds. ActiveRecord only stores nanoseconds.
+* MySQL 5.5: [Discards all fractional seconds](http://dev.mysql.com/doc/refman/5.5/en/time.html) from TIME and DATETIME types.
+
+## <a name="usage"></a>Usage
 
 ## Development
 
