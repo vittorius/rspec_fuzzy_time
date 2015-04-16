@@ -105,6 +105,25 @@ Here's some data on how different databases (which have backends supported by Ac
 
 ## <a name="usage"></a>Usage
 
+First of all, add some requires to your `spec_helper.rb`
+
+```ruby
+require 'rspec_fuzzy_time/spec_helper'
+```
+
+After that you will have a couple of additional config properties of `config` object in `RSpec.configure` block.
+
+```ruby
+RSpec.configure do |config|
+  # ...
+  
+  config.rspec_fuzzy_time_enabled = true # enabling RSpec Fuzzy Time
+  config.rspec_time_cutoff = :msec # comparing Time-like object with precision of at most 1 millisecond
+
+  # ...
+end
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `bin/console` for an interactive prompt that will allow you to experiment.
